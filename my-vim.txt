@@ -1,0 +1,22 @@
+set backspace=indent,eol,start
+set autoread
+
+syntax on
+set ai
+set number
+set ruler
+set hlsearch
+set showmatch
+
+autocmd BufNewFile,BufRead *.org set filetype=text
+
+hi clear SpellBad
+hi SpellBad cterm=underline
+
+iab teh the
+iab prolly probably
+
+autocmd FileType text :set wrap
+autocmd FileType text :set tw=80
+autocmd FileType text :set spell
+autocmd FileType text :set complete+=kspell
