@@ -1,58 +1,104 @@
-;;putting in a comment for fun.
-(setq frame-title-format "Not Evil Yet")
-(menu-bar-mode 1)
-(tool-bar-mode -1)
 
-(require 'package)
-(add-to-list 'package-archives '("Melpa" . "http://melpa.org/packages/"))
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
 (package-initialize)
-(require 'evil)
-(evil-mode 1)
-	     
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+ ;;   black    red       green     yellow    blue      purple    corn      white
+ ;;["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
+ ;;["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#ff00ff" "#729fcf" "#eeeeec"])
+   ["#2e3436" "#aa0000" "#00ff00" "#ffff00" "#0000ff" "#ff00ff" "#ffffff" "#eeeeec"])
  '(custom-enabled-themes (quote (manoj-dark)))
- '(inhibit-startup-screen t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+ '(custom-safe-themes
+   (quote
+    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+ '(inhibit-startup-screen t)
+ '(org-agenda-files nil)
+ '(package-selected-packages
+   (quote
+    (smart-mode-line powerline auto-complete powershell evil org))))
 
-;; **************** Start Block .ls **************** 
+(scroll-bar-mode -1)
+
+(setq frame-title-format "セル")
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(package-initialize)
+
+;; VIM hehehe
+(require 'evil)
+(evil-mode 1)
+
+;; Line Wrapping
+(global-visual-line-mode 1)
+
+;; This is for smart-mode-line, which is better than powerline
+(sml/setup)
+
+;; This need to be after (sml/setup) or else it gets overwritten
+(setq column-number-mode t)
+(auto-complete-mode 1)
+
+;; Yeah! That's right I have this working now!
+(load "Powershell.el")
+
+;; Start Block .ls
 ;; This hook function only sets colorscheme when our file has the extension ls
 (defun ls-hook ()
   (when (string= (file-name-extension buffer-file-name) "ls")
     ;; This changes the standard colorscheme
     (custom-set-faces
       '(background "Black")
-      '(font-lock-function-name-face ((t (:height 110 :bold nil :foreground "#00ff00"))))
-      '(font-lock-string-face ((t (:foreground "#FFFF00"))))
-      '(font-lock-keyword-face ((t (:italic nil :foreground "#FF0000"))))
-      '(font-lock-comment-face ((t (:foreground "#00FFFF")))))
-      ))
-
+      '(font-lock-builtin-face ((((class color) (background dark)) (:foreground "Turquoise"))))
+      '(font-lock-comment-face ((t (:foreground "#00FFFF"))))
+      '(font-lock-constant-face ((((class color) (background dark)) (:bold t :foreground "Grey"))))
+      '(font-lock-doc-string-face ((t (:foreground "green2"))))
+      '(font-lock-function-name-face ((t (:foreground "#00FF00"))))
+      '(font-lock-keyword-face ((t (:bold t :foreground "#FF0000"))))
+      '(font-lock-preprocessor-face ((t (:italic nil :foreground "CornFlowerBlue"))))
+      '(font-lock-reference-face ((t (:foreground "DodgerBlue"))))
+      '(font-lock-string-face ((t (:foreground "#FFFF00")))))))
 ;; Regex of Highlighting the lines - using the above color scheme
 (setq ls-highlights
-    ;; Lines ending with '.' GREEN
-  '(("^.*\\.\s*$" . font-lock-function-name-face)
-    ;; Lines ending with '?' YELLOW
-    ("^.*\\?\s*$" . font-lock-string-face)
-    ;; Lines ending with ';' RED
-    ("^.*;\s*$" . font-lock-keyword-face)
-    ;; Lines ending with '!' LIGHT BLUE
-    ("^.*\\!\s*$" . font-lock-comment-face)))
-;; Create 'ls-mode' which includes Org-Mode Features
+     '(
+       ;; Lines ending with '--' GREY
+       ("^.*\--\s*$" . font-lock-constant-face)
+       ;; Lines ending with '...' YELLOW
+       ("^.*\\.\.\.\s*$" . font-lock-string-face)
+       ;; Lines ending with '.' GREEN
+       ("^.*\\.\s*$" . font-lock-function-name-face)
+       ;; Lines ending with '?' YELLOW
+       ("^.*\\?\s*$" . font-lock-string-face)
+       ;; Lines ending with ';' RED
+       ("^.*;\s*$" . font-lock-keyword-face)
+       ;; Lines ending with '!' LIGHT BLUE
+       ("^.*\\!\s*$" . font-lock-comment-face)
+       ;; Completed check boxes GREEN
+       ("^.*\\[X\\].*$" . font-lock-function-name-face)
+       ;; Empty check boxes YELLOW
+       ("^.*\\[ \\].*$" . font-lock-string-face)
+       ;; In-Progress check boxes LIGHT BLUE
+       ("^.*\\[-\\].*$" . font-lock-comment-face)))
+;; create 'ls-mode' which includes Org-Mode Features
 (define-derived-mode ls-mode org-mode "ls"
   "major mode for editing ls files."
   (setq font-lock-defaults '(ls-highlights)))
 ;; Makes .ls files automatically start in ls-mode
 (add-to-list 'auto-mode-alist '("\\.ls\\'" . ls-mode))
-;; Adding our colorscheme func to the find-file-hook event
+;; Adding our solorscheme func to the find-file-hook event
 (add-hook 'find-file-hook 'ls-hook)
-;; **************** End Block .ls ****************
-
+;; End Block .ls
+;;(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ;;)
